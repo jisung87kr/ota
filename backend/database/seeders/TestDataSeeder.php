@@ -98,7 +98,7 @@ class TestDataSeeder extends Seeder
 
         // Seoul Accommodations
         $seoulHotel = Accommodation::create([
-            'owner_id' => $managers[0]->id,
+            'user_id' => $managers[0]->id,
             'name' => '서울 그랜드 호텔',
             'category' => 'hotel',
             'description' => '서울 중심부에 위치한 5성급 비즈니스 호텔입니다. 명동, 남산타워와 가까우며 최고급 서비스를 제공합니다.',
@@ -106,16 +106,14 @@ class TestDataSeeder extends Seeder
             'city' => '서울',
             'phone' => '02-1234-5678',
             'email' => 'info@seoulgrand.com',
-            'check_in_time' => '15:00',
-            'check_out_time' => '11:00',
-            'status' => 'active',
+            'is_active' => true,
             'average_rating' => 4.5,
             'total_reviews' => 0,
         ]);
         $seoulHotel->amenities()->attach($amenities->random(8)->pluck('id'));
 
         $seoulGuesthouse = Accommodation::create([
-            'owner_id' => $managers[0]->id,
+            'user_id' => $managers[0]->id,
             'name' => '홍대 스테이 게스트하우스',
             'category' => 'guesthouse',
             'description' => '홍대 중심부의 깔끔하고 현대적인 게스트하우스입니다. 젊고 활기찬 분위기를 즐기실 수 있습니다.',
@@ -123,9 +121,7 @@ class TestDataSeeder extends Seeder
             'city' => '서울',
             'phone' => '02-2222-3333',
             'email' => 'info@hongdaestay.com',
-            'check_in_time' => '14:00',
-            'check_out_time' => '11:00',
-            'status' => 'active',
+            'is_active' => true,
             'average_rating' => 4.2,
             'total_reviews' => 0,
         ]);
@@ -133,7 +129,7 @@ class TestDataSeeder extends Seeder
 
         // Busan Accommodations
         $busanResort = Accommodation::create([
-            'owner_id' => $managers[1]->id,
+            'user_id' => $managers[1]->id,
             'name' => '해운대 오션 리조트',
             'category' => 'resort',
             'description' => '해운대 해변이 한눈에 보이는 최고급 리조트입니다. 가족 단위 여행객에게 완벽한 휴양지입니다.',
@@ -141,16 +137,14 @@ class TestDataSeeder extends Seeder
             'city' => '부산',
             'phone' => '051-1111-2222',
             'email' => 'info@haeundaeresort.com',
-            'check_in_time' => '15:00',
-            'check_out_time' => '11:00',
-            'status' => 'active',
+            'is_active' => true,
             'average_rating' => 4.7,
             'total_reviews' => 0,
         ]);
         $busanResort->amenities()->attach($amenities->random(10)->pluck('id'));
 
         $busanMotel = Accommodation::create([
-            'owner_id' => $managers[1]->id,
+            'user_id' => $managers[1]->id,
             'name' => '광안리 비치 모텔',
             'category' => 'motel',
             'description' => '광안대교가 보이는 깔끔한 모텔입니다. 가성비가 좋고 바다와 가까워 인기가 많습니다.',
@@ -158,9 +152,7 @@ class TestDataSeeder extends Seeder
             'city' => '부산',
             'phone' => '051-3333-4444',
             'email' => 'info@gwanganmotel.com',
-            'check_in_time' => '14:00',
-            'check_out_time' => '12:00',
-            'status' => 'active',
+            'is_active' => true,
             'average_rating' => 4.0,
             'total_reviews' => 0,
         ]);
@@ -168,7 +160,7 @@ class TestDataSeeder extends Seeder
 
         // Jeju Accommodations
         $jejuPension = Accommodation::create([
-            'owner_id' => $managers[2]->id,
+            'user_id' => $managers[2]->id,
             'name' => '제주 힐링 펜션',
             'category' => 'pension',
             'description' => '한라산이 보이는 조용하고 평화로운 펜션입니다. 자연 속에서 힐링하기 좋습니다.',
@@ -176,9 +168,7 @@ class TestDataSeeder extends Seeder
             'city' => '제주',
             'phone' => '064-1234-5678',
             'email' => 'info@jejuhealing.com',
-            'check_in_time' => '15:00',
-            'check_out_time' => '11:00',
-            'status' => 'active',
+            'is_active' => true,
             'average_rating' => 4.6,
             'total_reviews' => 0,
         ]);
@@ -211,7 +201,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 1,
                     'base_price' => 120000,
                     'total_rooms' => 10,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(5)->pluck('id'));
 
@@ -226,7 +216,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 2,
                     'base_price' => 180000,
                     'total_rooms' => 8,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(6)->pluck('id'));
 
@@ -241,7 +231,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 1,
                     'base_price' => 350000,
                     'total_rooms' => 5,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(8)->pluck('id'));
                 break;
@@ -258,7 +248,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 2,
                     'base_price' => 250000,
                     'total_rooms' => 15,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(7)->pluck('id'));
 
@@ -273,7 +263,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 2,
                     'base_price' => 450000,
                     'total_rooms' => 10,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(9)->pluck('id'));
                 break;
@@ -290,7 +280,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 4,
                     'base_price' => 25000,
                     'total_rooms' => 4,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(4)->pluck('id'));
 
@@ -305,7 +295,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 1,
                     'base_price' => 60000,
                     'total_rooms' => 6,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(5)->pluck('id'));
                 break;
@@ -322,7 +312,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 1,
                     'base_price' => 70000,
                     'total_rooms' => 20,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(4)->pluck('id'));
 
@@ -337,7 +327,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 1,
                     'base_price' => 100000,
                     'total_rooms' => 15,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(5)->pluck('id'));
                 break;
@@ -354,7 +344,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 2,
                     'base_price' => 180000,
                     'total_rooms' => 5,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(6)->pluck('id'));
 
@@ -368,7 +358,7 @@ class TestDataSeeder extends Seeder
                     'bed_count' => 2,
                     'base_price' => 130000,
                     'total_rooms' => 8,
-                    'status' => 'active',
+                    'is_active' => true,
                 ]);
                 $room->amenities()->attach($amenities->random(5)->pluck('id'));
                 break;
