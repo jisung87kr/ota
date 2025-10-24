@@ -190,17 +190,28 @@ class Accommodation extends Model
     }
 
     /**
-     * Scope to filter by price range
+     * Scope to filter by price range based on minimum room price
      */
     public function scopePriceRange($query, $minPrice = null, $maxPrice = null)
     {
-        return $query->whereHas('activeRooms', function ($q) use ($minPrice, $maxPrice) {
-            if ($minPrice) {
-                $q->where('base_price', '>=', $minPrice);
-            }
-            if ($maxPrice) {
-                $q->where('base_price', '<=', $maxPrice);
-            }
-        });
+        if (!$minPrice && !$maxPrice) {
+            return $query;
+        }
+
+        // Ensure accommodation has active rooms
+        $query->whereHas('activeRooms');
+
+        // Subquery to get minimum price for each accommodation
+        $minPriceSubquery = '(SELECT MIN(base_price) FROM rooms WHERE rooms.accommodation_id = accommodations.id AND rooms.is_active = true)';
+
+        if ($minPrice && $maxPrice) {
+            $query->whereRaw("$minPriceSubquery >= ? AND $minPriceSubquery <= ?", [$minPrice, $maxPrice]);
+        } elseif ($minPrice) {
+            $query->whereRaw("$minPriceSubquery >= ?", [$minPrice]);
+        } elseif ($maxPrice) {
+            $query->whereRaw("$minPriceSubquery <= ?", [$maxPrice]);
+        }
+
+        return $query;
     }
 }
