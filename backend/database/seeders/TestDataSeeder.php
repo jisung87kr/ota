@@ -465,7 +465,7 @@ class TestDataSeeder extends Seeder
                             'location_rating' => rand(3, 5),
                             'value_rating' => rand(3, 5),
                             'helpful_count' => rand(0, 20),
-                            'is_hidden' => false,
+                            'is_visible' => true,
                             'created_at' => $checkOut->copy()->addDays(rand(1, 7)),
                         ]);
 
