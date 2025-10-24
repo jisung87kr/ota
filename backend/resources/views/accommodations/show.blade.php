@@ -98,9 +98,8 @@
         @endif
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Main Content -->
-        <div class="lg:col-span-2">
+    <!-- Main Content -->
+    <div>
             <!-- Description -->
             <section class="mb-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">숙소 소개</h2>
@@ -461,85 +460,6 @@
                     </div>
                 </section>
             @endif
-        </div>
-
-        <!-- Sidebar - Booking Card -->
-        <div class="lg:col-span-1">
-            <div class="bg-white border border-gray-200 rounded-lg p-6 sticky top-4">
-                <div class="mb-4">
-                    <p class="text-sm text-gray-600">1박당</p>
-                    <p class="text-3xl font-bold text-blue-600">₩{{ number_format($accommodation->min_price) }}</p>
-                </div>
-
-                @if($accommodation->average_rating > 0)
-                    <div class="flex items-center mb-4 pb-4 border-b">
-                        <span class="text-yellow-500 mr-1">★</span>
-                        <span class="font-semibold mr-1">{{ number_format($accommodation->average_rating, 1) }}</span>
-                        <span class="text-gray-600 text-sm">({{ $accommodation->total_reviews }}개 리뷰)</span>
-                    </div>
-                @endif
-
-                <div class="space-y-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">체크인</label>
-                        <input type="date"
-                               id="check_in_input"
-                               value="{{ $checkIn }}"
-                               min="{{ date('Y-m-d') }}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">체크아웃</label>
-                        <input type="date"
-                               id="check_out_input"
-                               value="{{ $checkOut }}"
-                               min="{{ date('Y-m-d', strtotime('+1 day')) }}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">투숙객</label>
-                        <select id="guests_input" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                            <option value="1" {{ $guests == 1 ? 'selected' : '' }}>1명</option>
-                            <option value="2" {{ $guests == 2 ? 'selected' : '' }}>2명</option>
-                            <option value="3" {{ $guests == 3 ? 'selected' : '' }}>3명</option>
-                            <option value="4" {{ $guests == 4 ? 'selected' : '' }}>4명</option>
-                            <option value="5" {{ $guests >= 5 ? 'selected' : '' }}>5명 이상</option>
-                        </select>
-                    </div>
-                    <button onclick="updateBookingLinks()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-semibold">
-                        날짜 적용
-                    </button>
-                </div>
-
-                <div class="mb-4 pb-4 border-b">
-                    <div class="flex justify-between text-sm mb-2">
-                        <span>객실 선택 후</span>
-                        <span>가격이 표시됩니다</span>
-                    </div>
-                </div>
-
-                <p class="text-xs text-gray-600 text-center">
-                    아래 객실 목록에서 원하는 객실을 선택하세요
-                </p>
-            </div>
-        </div>
     </div>
 </div>
-
-<script>
-function updateBookingLinks() {
-    const checkIn = document.getElementById('check_in_input').value;
-    const checkOut = document.getElementById('check_out_input').value;
-    const guests = document.getElementById('guests_input').value;
-
-    // Update URL with new parameters
-    const url = new URL(window.location);
-    url.searchParams.set('check_in', checkIn);
-    url.searchParams.set('check_out', checkOut);
-    url.searchParams.set('guests', guests);
-
-    // Reload page with new parameters
-    window.location.href = url.toString();
-}
-</script>
 @endsection
