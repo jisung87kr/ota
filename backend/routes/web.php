@@ -6,6 +6,7 @@ use App\Http\Controllers\Manager\AccommodationController as ManagerAccommodation
 use App\Http\Controllers\Manager\BookingManagementController;
 use App\Http\Controllers\Manager\DashboardController;
 use App\Http\Controllers\Manager\RoomController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Web\AccommodationController;
 use App\Http\Controllers\Web\BookingController;
 use Illuminate\Support\Facades\Route;
@@ -58,7 +59,15 @@ Route::middleware('auth')->group(function () {
 
     // Cancel booking
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+
+    // Payment Routes
+    Route::get('/payments/{booking}/prepare', [PaymentController::class, 'prepare'])->name('payment.prepare');
+    Route::get('/payments/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+    Route::post('/payments/{booking}/refund', [PaymentController::class, 'refund'])->name('payment.refund');
 });
+
+// Payment Webhook (no auth required)
+Route::post('/payments/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
 
 // Protected Routes - Customer
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {

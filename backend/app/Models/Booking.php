@@ -96,6 +96,14 @@ class Booking extends Model
     }
 
     /**
+     * Get the payment for this booking
+     */
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    /**
      * Calculate nights between check-in and check-out
      */
     public function calculateNights(): int
@@ -182,6 +190,22 @@ class Booking extends Model
         $this->paid_amount = $this->total_price;
 
         return $this->save();
+    }
+
+    /**
+     * Check if booking is paid
+     */
+    public function isPaid(): bool
+    {
+        return $this->payment && $this->payment->isPaid();
+    }
+
+    /**
+     * Get payment status
+     */
+    public function getPaymentStatus(): ?string
+    {
+        return $this->payment ? $this->payment->status : null;
     }
 
     /**

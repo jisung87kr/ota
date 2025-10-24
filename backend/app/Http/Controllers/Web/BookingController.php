@@ -118,13 +118,10 @@ class BookingController extends Controller
 
             DB::commit();
 
-            // TODO: In Epic 5, redirect to payment page
-            // For now, just confirm the booking
-            $booking->confirm();
-
+            // Redirect to payment page
             return redirect()
-                ->route('bookings.confirmation', $booking->id)
-                ->with('success', '예약이 완료되었습니다!');
+                ->route('payment.prepare', $booking->id)
+                ->with('success', '예약 정보가 생성되었습니다. 결제를 진행해주세요.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -178,11 +175,11 @@ class BookingController extends Controller
     }
 
     /**
-     * Cancel a booking
+     * Cancel a booking (redirects to payment refund)
      */
     public function cancel(Request $request, $id)
     {
-        $booking = Booking::where('user_id', Auth::id())->findOrFail($id);
+        $booking = Booking::with('payment')->where('user_id', Auth::id())->findOrFail($id);
 
         if (!$booking->canBeCancelled()) {
             return redirect()
@@ -194,16 +191,18 @@ class BookingController extends Controller
             'cancellation_reason' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $refundAmount = $booking->calculateRefundAmount();
-
-        if ($booking->cancel($validated['cancellation_reason'])) {
+        // If payment exists and is paid, redirect to refund processing
+        if ($booking->isPaid()) {
             return redirect()
-                ->route('bookings.show', $id)
-                ->with('success', "예약이 취소되었습니다. 환불 금액: ₩" . number_format($refundAmount));
+                ->route('payment.refund', $booking->id)
+                ->with('cancellation_reason', $validated['cancellation_reason'] ?? '고객 요청');
         }
+
+        // No payment or not paid yet - just cancel the booking
+        $booking->cancel($validated['cancellation_reason']);
 
         return redirect()
             ->route('bookings.show', $id)
-            ->with('error', '예약 취소 중 오류가 발생했습니다.');
+            ->with('success', '예약이 취소되었습니다.');
     }
 }

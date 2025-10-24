@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'portone' => [
+        'imp_code' => env('PORTONE_IMP_CODE'),
+        'api_key' => env('PORTONE_API_KEY'),
+        'api_secret' => env('PORTONE_API_SECRET'),
+    ],
+
 ];
