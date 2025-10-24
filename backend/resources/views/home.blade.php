@@ -101,6 +101,104 @@
         </div>
     </div>
 
+    <!-- Recommended Accommodations Section -->
+    @if($recommendedAccommodations->count() > 0)
+        <div class="py-12 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-gray-900">추천 숙소</h2>
+                    <p class="mt-2 text-gray-600">높은 평점을 받은 인기 숙소를 확인해보세요</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @foreach($recommendedAccommodations as $accommodation)
+                        <a href="{{ route('accommodations.show', $accommodation->id) }}"
+                           class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <!-- Image -->
+                            <div class="h-48 bg-gray-200 relative">
+                                @if($accommodation->main_image)
+                                    <img src="{{ asset('storage/' . $accommodation->main_image) }}"
+                                         alt="{{ $accommodation->name }}"
+                                         class="w-full h-full object-cover">
+                                @elseif($accommodation->images->first())
+                                    <img src="{{ asset('storage/' . $accommodation->images->first()->path) }}"
+                                         alt="{{ $accommodation->name }}"
+                                         class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center bg-gray-300">
+                                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                        </svg>
+                                    </div>
+                                @endif
+
+                                <!-- Rating Badge -->
+                                @if($accommodation->average_rating > 0)
+                                    <div class="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                        {{ number_format($accommodation->average_rating, 1) }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Content -->
+                            <div class="p-5">
+                                <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{{ $accommodation->name }}</h3>
+
+                                <div class="flex items-center text-sm text-gray-600 mb-2">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    {{ $accommodation->city }}
+                                </div>
+
+                                <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $accommodation->description }}</p>
+
+                                <div class="flex items-center justify-between pt-3 border-t">
+                                    <div>
+                                        @if($accommodation->activeRooms->count() > 0)
+                                            <span class="text-sm text-gray-500">최저가</span>
+                                            <p class="text-xl font-bold text-blue-600">
+                                                ₩{{ number_format($accommodation->activeRooms->min('base_price')) }}
+                                            </p>
+                                            <span class="text-xs text-gray-500">/ 1박</span>
+                                        @else
+                                            <span class="text-sm text-gray-500">가격 문의</span>
+                                        @endif
+                                    </div>
+
+                                    @if($accommodation->total_reviews > 0)
+                                        <div class="text-right">
+                                            <div class="flex items-center text-yellow-500">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <svg class="w-4 h-4 {{ $i <= round($accommodation->average_rating) ? 'text-yellow-400' : 'text-gray-300' }}"
+                                                         fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                    </svg>
+                                                @endfor
+                                            </div>
+                                            <span class="text-xs text-gray-500">{{ $accommodation->total_reviews }}개 리뷰</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+
+                <div class="text-center mt-10">
+                    <a href="{{ route('accommodations.index') }}"
+                       class="inline-block bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 font-semibold">
+                        모든 숙소 보기
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @auth
         <div class="mt-12 bg-blue-50 rounded-lg p-8 text-center">
             <h2 class="text-2xl font-bold text-gray-900">환영합니다, {{ Auth::user()->name }}님!</h2>

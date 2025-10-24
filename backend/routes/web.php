@@ -14,7 +14,16 @@ use Illuminate\Support\Facades\Route;
 
 // Home
 Route::get('/', function () {
-    return view('home');
+    // Get recommended accommodations (highest rated with reviews)
+    $recommendedAccommodations = \App\Models\Accommodation::with(['activeRooms', 'images'])
+        ->active()
+        ->where('average_rating', '>=', 4.0)
+        ->orderBy('average_rating', 'desc')
+        ->orderBy('total_reviews', 'desc')
+        ->limit(6)
+        ->get();
+
+    return view('home', compact('recommendedAccommodations'));
 })->name('home');
 
 // Accommodation Search and Browsing (Public)
