@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # Nginx Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: ota_nginx
+    ports:
+      - "9970:80"
+      - "9971:443"
+    volumes:
+      - ./backend:/var/www/backend
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/logs:/var/log/nginx
+    depends_on:
+      - php
+    networks:
+      - ota_network
+
+  # PHP-FPM for Laravel
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: ota_php
+    volumes:
+      - ./backend:/var/www/backend
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=ota_db
+      - DB_USERNAME=ota_user
+      - DB_PASSWORD=ota_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+    depends_on:
+      - mysql
+      - redis
+      - mongodb
+    networks:
+      - ota_network
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: ota_mysql
+    ports:
+      - "9972:3306"
+    environment:
+      MYSQL_DATABASE: ota_db
+      MYSQL_USER: ota_user
+      MYSQL_PASSWORD: ota_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - ota_network
+
+  # Redis Cache
+  redis:
+    image: redis:alpine
+    container_name: ota_redis
+    ports:
+      - "9973:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ota_network
+
+  # MongoDB
+  mongodb:
+    image: mongo:latest
+    container_name: ota_mongodb
+    ports:
+      - "9974:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ota_admin
+      MONGO_INITDB_ROOT_PASSWORD: ota_mongo_password
+      MONGO_INITDB_DATABASE: ota_logs
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - ota_network
+
+  # Vue.js Frontend (Development)
+#  frontend:
+#    build:
+#      context: ./docker/node
+#      dockerfile: Dockerfile
+#    container_name: ota_frontend
+#    ports:
+#      - "9975:5173"
+#    volumes:
+#      - ./frontend:/app
+#      - /app/node_modulesx`
+#    environment:
+#      - NODE_ENV=development
+#    command: npm run dev
+#    networks:
+#      - ota_network
+
+networks:
+  ota_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
+  mongodb_data:
