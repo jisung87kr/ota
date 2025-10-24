@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Manager\AccommodationController as ManagerAccommodationController;
+use App\Http\Controllers\Manager\BookingManagementController;
+use App\Http\Controllers\Manager\DashboardController;
+use App\Http\Controllers\Manager\RoomController;
 use App\Http\Controllers\Web\AccommodationController;
 use App\Http\Controllers\Web\BookingController;
 use Illuminate\Support\Facades\Route;
@@ -65,9 +69,29 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
 
 // Protected Routes - Accommodation Manager
 Route::middleware(['auth', 'role:accommodation_manager'])->prefix('manager')->name('manager.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('manager.dashboard');
-    })->name('dashboard');
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Accommodations
+    Route::resource('accommodations', ManagerAccommodationController::class);
+
+    // Rooms
+    Route::get('/accommodations/{accommodation}/rooms/create', [RoomController::class, 'create'])
+        ->name('accommodations.rooms.create');
+    Route::post('/accommodations/{accommodation}/rooms', [RoomController::class, 'store'])
+        ->name('accommodations.rooms.store');
+    Route::get('/accommodations/{accommodation}/rooms/{room}/edit', [RoomController::class, 'edit'])
+        ->name('accommodations.rooms.edit');
+    Route::put('/accommodations/{accommodation}/rooms/{room}', [RoomController::class, 'update'])
+        ->name('accommodations.rooms.update');
+    Route::delete('/accommodations/{accommodation}/rooms/{room}', [RoomController::class, 'destroy'])
+        ->name('accommodations.rooms.destroy');
+
+    // Booking Management
+    Route::get('/bookings', [BookingManagementController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/{id}', [BookingManagementController::class, 'show'])->name('bookings.show');
+    Route::post('/bookings/{id}/status', [BookingManagementController::class, 'updateStatus'])
+        ->name('bookings.update-status');
 });
 
 // Protected Routes - Admin
