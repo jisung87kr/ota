@@ -185,6 +185,240 @@
                 </div>
                 <p class="mt-2 text-gray-700">{{ $accommodation->address }}</p>
             </section>
+
+            <!-- Reviews Section -->
+            @if($accommodation->total_reviews > 0)
+                <section class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">리뷰 {{ number_format($accommodation->total_reviews) }}개</h2>
+
+                    <!-- Review Statistics -->
+                    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Overall Rating -->
+                            <div class="flex items-center">
+                                <div class="mr-6">
+                                    <div class="text-5xl font-bold text-gray-900">{{ number_format($accommodation->average_rating, 1) }}</div>
+                                    <div class="flex items-center mt-2">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <svg class="w-5 h-5 {{ $i <= round($accommodation->average_rating) ? 'text-yellow-400' : 'text-gray-300' }}"
+                                                 fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        @endfor
+                                    </div>
+                                    <div class="text-sm text-gray-600 mt-1">{{ number_format($accommodation->total_reviews) }}개 리뷰</div>
+                                </div>
+                            </div>
+
+                            <!-- Rating Distribution -->
+                            <div class="space-y-2">
+                                @foreach([5, 4, 3, 2, 1] as $rating)
+                                    @php
+                                        $count = $ratingDistribution[$rating] ?? 0;
+                                        $percentage = $accommodation->total_reviews > 0
+                                            ? round(($count / $accommodation->total_reviews) * 100)
+                                            : 0;
+                                    @endphp
+                                    <div class="flex items-center text-sm">
+                                        <span class="w-8 text-gray-700">{{ $rating }}점</span>
+                                        <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-yellow-400 h-2 rounded-full" style="width: {{ $percentage }}%"></div>
+                                        </div>
+                                        <span class="w-12 text-right text-gray-600">{{ $count }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review Filters and Sort -->
+                    <div class="mb-6 flex flex-wrap gap-3 items-center justify-between">
+                        <div class="flex flex-wrap gap-2">
+                            <!-- Rating Filter -->
+                            <select onchange="window.location.href=this.value"
+                                    class="px-4 py-2 border rounded-lg text-sm">
+                                <option value="{{ request()->fullUrlWithQuery(['review_rating' => null]) }}"
+                                        {{ !request('review_rating') ? 'selected' : '' }}>
+                                    모든 평점
+                                </option>
+                                @foreach([5, 4, 3, 2, 1] as $rating)
+                                    <option value="{{ request()->fullUrlWithQuery(['review_rating' => $rating]) }}"
+                                            {{ request('review_rating') == $rating ? 'selected' : '' }}>
+                                        {{ $rating }}점
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <!-- Photos Filter -->
+                            <a href="{{ request()->fullUrlWithQuery(['with_photos' => request('with_photos') === '1' ? null : '1']) }}"
+                               class="px-4 py-2 border rounded-lg text-sm {{ request('with_photos') === '1' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'hover:bg-gray-50' }}">
+                                📷 사진 리뷰만
+                            </a>
+                        </div>
+
+                        <!-- Sort Options -->
+                        <select onchange="window.location.href=this.value"
+                                class="px-4 py-2 border rounded-lg text-sm">
+                            <option value="{{ request()->fullUrlWithQuery(['review_sort' => 'newest']) }}"
+                                    {{ request('review_sort', 'newest') === 'newest' ? 'selected' : '' }}>
+                                최신순
+                            </option>
+                            <option value="{{ request()->fullUrlWithQuery(['review_sort' => 'helpful']) }}"
+                                    {{ request('review_sort') === 'helpful' ? 'selected' : '' }}>
+                                도움된 순
+                            </option>
+                            <option value="{{ request()->fullUrlWithQuery(['review_sort' => 'rating_high']) }}"
+                                    {{ request('review_sort') === 'rating_high' ? 'selected' : '' }}>
+                                평점 높은 순
+                            </option>
+                            <option value="{{ request()->fullUrlWithQuery(['review_sort' => 'rating_low']) }}"
+                                    {{ request('review_sort') === 'rating_low' ? 'selected' : '' }}>
+                                평점 낮은 순
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Review List -->
+                    <div class="space-y-6">
+                        @forelse($reviews as $review)
+                            <div class="border-b border-gray-200 pb-6 last:border-b-0">
+                                <!-- Review Header -->
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold mr-3">
+                                            {{ mb_substr($review->user->name, 0, 1) }}
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-gray-900">{{ $review->user->name }}</div>
+                                            <div class="text-xs text-gray-500">{{ $review->created_at->format('Y-m-d') }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <svg class="w-4 h-4 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}"
+                                                 fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                <!-- Review Title -->
+                                @if($review->title)
+                                    <h3 class="font-semibold text-gray-900 mb-2">{{ $review->title }}</h3>
+                                @endif
+
+                                <!-- Review Content -->
+                                <p class="text-gray-700 mb-3 leading-relaxed">{{ $review->content }}</p>
+
+                                <!-- Category Ratings -->
+                                @if($review->cleanliness_rating || $review->service_rating || $review->location_rating || $review->value_rating)
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3 text-sm">
+                                        @if($review->cleanliness_rating)
+                                            <div class="flex items-center text-gray-600">
+                                                <span class="mr-1">청결도</span>
+                                                <span class="font-semibold">{{ $review->cleanliness_rating }}</span>
+                                            </div>
+                                        @endif
+                                        @if($review->service_rating)
+                                            <div class="flex items-center text-gray-600">
+                                                <span class="mr-1">서비스</span>
+                                                <span class="font-semibold">{{ $review->service_rating }}</span>
+                                            </div>
+                                        @endif
+                                        @if($review->location_rating)
+                                            <div class="flex items-center text-gray-600">
+                                                <span class="mr-1">위치</span>
+                                                <span class="font-semibold">{{ $review->location_rating }}</span>
+                                            </div>
+                                        @endif
+                                        @if($review->value_rating)
+                                            <div class="flex items-center text-gray-600">
+                                                <span class="mr-1">가성비</span>
+                                                <span class="font-semibold">{{ $review->value_rating }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+
+                                <!-- Review Photos -->
+                                @if($review->photos && count($review->photos) > 0)
+                                    <div class="flex gap-2 mb-3 overflow-x-auto">
+                                        @foreach($review->photos as $photo)
+                                            <img src="{{ asset('storage/' . $photo) }}"
+                                                 alt="리뷰 사진"
+                                                 class="w-24 h-24 object-cover rounded-lg cursor-pointer hover:opacity-75"
+                                                 onclick="window.open(this.src)">
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                <!-- Accommodation Response -->
+                                @if($review->response)
+                                    <div class="mt-3 bg-blue-50 rounded-lg p-4">
+                                        <div class="flex items-start">
+                                            <svg class="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                            </svg>
+                                            <div class="flex-1">
+                                                <div class="font-semibold text-blue-900 mb-1">숙소 측 답변</div>
+                                                <p class="text-blue-800 text-sm">{{ $review->response }}</p>
+                                                @if($review->responded_at)
+                                                    <p class="text-xs text-blue-600 mt-1">{{ $review->responded_at->format('Y-m-d') }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <!-- Helpful Button -->
+                                <div class="mt-3 flex items-center">
+                                    @auth
+                                        <form action="{{ route('reviews.helpful', $review->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="text-sm text-gray-600 hover:text-blue-600 flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                                </svg>
+                                                도움됨 ({{ $review->helpful_count }})
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-sm text-gray-500 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                            </svg>
+                                            도움됨 ({{ $review->helpful_count }})
+                                        </span>
+                                    @endauth
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-8 text-gray-500">
+                                선택한 조건에 맞는 리뷰가 없습니다.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Pagination -->
+                    @if($reviews->hasPages())
+                        <div class="mt-6">
+                            {{ $reviews->links() }}
+                        </div>
+                    @endif
+                </section>
+            @else
+                <section class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">리뷰</h2>
+                    <div class="text-center py-12 bg-gray-50 rounded-lg">
+                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                        </svg>
+                        <p class="text-gray-600">아직 작성된 리뷰가 없습니다.</p>
+                        <p class="text-sm text-gray-500 mt-1">첫 번째 리뷰를 작성해보세요!</p>
+                    </div>
+                </section>
+            @endif
         </div>
 
         <!-- Sidebar - Booking Card -->

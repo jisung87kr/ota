@@ -92,7 +92,48 @@ class AccommodationController extends Controller
         $checkOut = $request->get('check_out');
         $guests = $request->get('guests', 2);
 
-        return view('accommodations.show', compact('accommodation', 'checkIn', 'checkOut', 'guests'));
+        // Get reviews with filtering and sorting
+        $reviewsQuery = $accommodation->reviews()->visible()->with('user');
+
+        // Filter by rating
+        if ($request->filled('review_rating')) {
+            $reviewsQuery->byRating($request->review_rating);
+        }
+
+        // Filter by photos
+        if ($request->get('with_photos') === '1') {
+            $reviewsQuery->withPhotos();
+        }
+
+        // Sorting
+        $sortBy = $request->get('review_sort', 'newest');
+        switch ($sortBy) {
+            case 'helpful':
+                $reviewsQuery->mostHelpful();
+                break;
+            case 'rating_high':
+                $reviewsQuery->orderBy('rating', 'desc');
+                break;
+            case 'rating_low':
+                $reviewsQuery->orderBy('rating', 'asc');
+                break;
+            default: // newest
+                $reviewsQuery->newest();
+        }
+
+        $reviews = $reviewsQuery->paginate(10)->withQueryString();
+
+        // Get rating distribution
+        $ratingDistribution = $accommodation->getRatingDistribution();
+
+        return view('accommodations.show', compact(
+            'accommodation',
+            'checkIn',
+            'checkOut',
+            'guests',
+            'reviews',
+            'ratingDistribution'
+        ));
     }
 
     /**
