@@ -13,7 +13,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">목적지</label>
                     <input type="text"
                            name="city"
-                           value="{{ $accommodation->city }}"
+                           value="{{ $accommodation->name }}"
                            placeholder="어디로 떠나시나요?"
                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
