@@ -88,8 +88,9 @@ class AccommodationController extends Controller
         ])->findOrFail($id);
 
         // Get check-in and check-out dates from request (for availability check)
-        $checkIn = $request->get('check_in');
-        $checkOut = $request->get('check_out');
+        // If not provided, default to tomorrow and day after
+        $checkIn = $request->get('check_in', now()->addDay()->format('Y-m-d'));
+        $checkOut = $request->get('check_out', now()->addDays(2)->format('Y-m-d'));
         $guests = $request->get('guests', 2);
 
         // Get reviews with filtering and sorting

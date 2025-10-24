@@ -441,6 +441,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">체크인</label>
                         <input type="date"
+                               id="check_in_input"
                                value="{{ $checkIn }}"
                                min="{{ date('Y-m-d') }}"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md">
@@ -448,13 +449,14 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">체크아웃</label>
                         <input type="date"
+                               id="check_out_input"
                                value="{{ $checkOut }}"
                                min="{{ date('Y-m-d', strtotime('+1 day')) }}"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">투숙객</label>
-                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <select id="guests_input" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                             <option value="1" {{ $guests == 1 ? 'selected' : '' }}>1명</option>
                             <option value="2" {{ $guests == 2 ? 'selected' : '' }}>2명</option>
                             <option value="3" {{ $guests == 3 ? 'selected' : '' }}>3명</option>
@@ -462,6 +464,9 @@
                             <option value="5" {{ $guests >= 5 ? 'selected' : '' }}>5명 이상</option>
                         </select>
                     </div>
+                    <button onclick="updateBookingLinks()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-semibold">
+                        날짜 적용
+                    </button>
                 </div>
 
                 <div class="mb-4 pb-4 border-b">
@@ -478,4 +483,21 @@
         </div>
     </div>
 </div>
+
+<script>
+function updateBookingLinks() {
+    const checkIn = document.getElementById('check_in_input').value;
+    const checkOut = document.getElementById('check_out_input').value;
+    const guests = document.getElementById('guests_input').value;
+
+    // Update URL with new parameters
+    const url = new URL(window.location);
+    url.searchParams.set('check_in', checkIn);
+    url.searchParams.set('check_out', checkOut);
+    url.searchParams.set('guests', guests);
+
+    // Reload page with new parameters
+    window.location.href = url.toString();
+}
+</script>
 @endsection
