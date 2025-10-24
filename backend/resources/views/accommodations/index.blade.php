@@ -4,6 +4,72 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Search Form -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8 sticky top-0 z-10">
+        <form method="GET" action="{{ route('accommodations.index') }}">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <!-- City -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">목적지</label>
+                    <input type="text"
+                           name="city"
+                           value="{{ request('city') }}"
+                           placeholder="어디로 떠나시나요?"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <!-- Check-in Date -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">체크인</label>
+                    <input type="date"
+                           name="check_in"
+                           value="{{ request('check_in') }}"
+                           min="{{ date('Y-m-d') }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <!-- Check-out Date -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">체크아웃</label>
+                    <input type="date"
+                           name="check_out"
+                           value="{{ request('check_out') }}"
+                           min="{{ request('check_in', date('Y-m-d', strtotime('+1 day'))) }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <!-- Search Button -->
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 font-semibold flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        검색
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preserve filter parameters -->
+            @if(request('min_price'))
+                <input type="hidden" name="min_price" value="{{ request('min_price') }}">
+            @endif
+            @if(request('max_price'))
+                <input type="hidden" name="max_price" value="{{ request('max_price') }}">
+            @endif
+            @if(request('rating'))
+                <input type="hidden" name="rating" value="{{ request('rating') }}">
+            @endif
+            @if(request('amenities'))
+                @foreach(request('amenities') as $amenity)
+                    <input type="hidden" name="amenities[]" value="{{ $amenity }}">
+                @endforeach
+            @endif
+            @if(request('sort'))
+                <input type="hidden" name="sort" value="{{ request('sort') }}">
+            @endif
+        </form>
+    </div>
+
     <div class="flex flex-col lg:flex-row gap-8">
         <!-- Filters Sidebar -->
         <aside class="lg:w-1/4">
