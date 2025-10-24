@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Web\AccommodationController;
+use App\Http\Controllers\Web\BookingController;
 use Illuminate\Support\Facades\Route;
 
 // Home
@@ -36,6 +37,24 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
+
+// Booking Routes (Authenticated Users)
+Route::middleware('auth')->group(function () {
+    // Create booking
+    Route::get('/accommodations/{accommodation}/rooms/{room}/book', [BookingController::class, 'create'])
+        ->name('bookings.create');
+    Route::post('/accommodations/{accommodation}/rooms/{room}/book', [BookingController::class, 'store'])
+        ->name('bookings.store');
+
+    // View bookings
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
+    Route::get('/bookings/{id}/confirmation', [BookingController::class, 'confirmation'])
+        ->name('bookings.confirmation');
+
+    // Cancel booking
+    Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+});
 
 // Protected Routes - Customer
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {

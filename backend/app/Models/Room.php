@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\BookingStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Room extends Model
@@ -56,6 +58,14 @@ class Room extends Model
     }
 
     /**
+     * Get bookings for this room
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
      * Scope a query to only include active rooms
      */
     public function scopeActive($query)
@@ -65,12 +75,43 @@ class Room extends Model
 
     /**
      * Check availability for a date range
-     * TODO: Implement with bookings table in Epic 3
+     * Returns the number of available rooms for the given date range
      */
     public function checkAvailability($checkIn, $checkOut): int
     {
-        // For now, return total rooms
-        // Will be implemented properly in Epic 3 with bookings
-        return $this->total_rooms;
+        // Convert to Carbon dates if strings
+        if (is_string($checkIn)) {
+            $checkIn = \Carbon\Carbon::parse($checkIn);
+        }
+        if (is_string($checkOut)) {
+            $checkOut = \Carbon\Carbon::parse($checkOut);
+        }
+
+        // Count bookings that overlap with the requested date range
+        $bookedRooms = $this->bookings()
+            ->whereIn('status', [
+                BookingStatus::PENDING->value,
+                BookingStatus::CONFIRMED->value,
+                BookingStatus::CHECKED_IN->value,
+            ])
+            ->where(function ($query) use ($checkIn, $checkOut) {
+                $query->whereBetween('check_in_date', [$checkIn, $checkOut])
+                    ->orWhereBetween('check_out_date', [$checkIn, $checkOut])
+                    ->orWhere(function ($q) use ($checkIn, $checkOut) {
+                        $q->where('check_in_date', '<=', $checkIn)
+                          ->where('check_out_date', '>=', $checkOut);
+                    });
+            })
+            ->count();
+
+        return max(0, $this->total_rooms - $bookedRooms);
+    }
+
+    /**
+     * Check if room is available for the given date range
+     */
+    public function isAvailable($checkIn, $checkOut): bool
+    {
+        return $this->checkAvailability($checkIn, $checkOut) > 0;
     }
 }

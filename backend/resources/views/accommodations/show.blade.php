@@ -154,9 +154,10 @@
                                                 <p class="text-sm text-gray-600">/ 1박</p>
                                             </div>
                                             @auth
-                                                <button class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                                                <a href="{{ route('bookings.create', ['accommodation' => $accommodation->id, 'room' => $room->id, 'check_in' => $checkIn, 'check_out' => $checkOut, 'guests' => $guests]) }}"
+                                                   class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 inline-block">
                                                     예약하기
-                                                </button>
+                                                </a>
                                             @else
                                                 <a href="{{ route('login') }}" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
                                                     로그인 후 예약

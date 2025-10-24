@@ -81,6 +81,14 @@ class Accommodation extends Model
     }
 
     /**
+     * Get bookings for this accommodation
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
      * Get the minimum room price
      */
     public function getMinPriceAttribute(): float

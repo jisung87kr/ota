@@ -30,6 +30,7 @@
 
                 <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
                     @auth
+                        <a href="{{ route('bookings.index') }}" class="text-gray-700 hover:text-gray-900">내 예약</a>
                         <span class="text-gray-700">{{ Auth::user()->name }}님</span>
                         @if(Auth::user()->isCustomer())
                             <a href="{{ route('customer.dashboard') }}" class="text-gray-700 hover:text-gray-900">대시보드</a>
