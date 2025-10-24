@@ -23,6 +23,8 @@ services:
       context: ./docker/php
       dockerfile: Dockerfile
     container_name: ota_php
+    ports:
+      - "9976:9976"  # Vite dev server
     volumes:
       - ./backend:/var/www/backend
     environment:
@@ -86,21 +88,21 @@ services:
       - ota_network
 
   # Vue.js Frontend (Development)
-#  frontend:
-#    build:
-#      context: ./docker/node
-#      dockerfile: Dockerfile
-#    container_name: ota_frontend
-#    ports:
-#      - "9975:5173"
-#    volumes:
-#      - ./frontend:/app
-#      - /app/node_modulesx`
-#    environment:
-#      - NODE_ENV=development
-#    command: npm run dev
-#    networks:
-#      - ota_network
+  frontend:
+    build:
+      context: ./docker/node
+      dockerfile: Dockerfile
+    container_name: ota_frontend
+    ports:
+      - "9975:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modulesx`
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    networks:
+      - ota_network
 
 networks:
   ota_network:

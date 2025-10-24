@@ -13,6 +13,13 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     pkg-config
 
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+# Verify Node.js and npm installation
+RUN node --version && npm --version
+
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
