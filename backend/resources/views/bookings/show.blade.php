@@ -121,6 +121,13 @@
 
         <!-- Actions -->
         <div class="flex gap-4">
+            @if($booking->canWriteReview())
+                <a href="{{ route('reviews.create', $booking->id) }}"
+                   class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 font-semibold text-center">
+                    리뷰 작성하기
+                </a>
+            @endif
+
             @if($booking->canBeCancelled())
                 <form method="POST" action="{{ route('bookings.cancel', $booking->id) }}" class="flex-1"
                       onsubmit="return confirm('정말 예약을 취소하시겠습니까?\n\n취소 정책에 따라 환불 금액이 결정됩니다.\n예상 환불액: ₩{{ number_format($booking->calculateRefundAmount()) }}');">

@@ -104,6 +104,30 @@ class Booking extends Model
     }
 
     /**
+     * Get the review for this booking
+     */
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
+
+    /**
+     * Check if this booking has a review
+     */
+    public function hasReview(): bool
+    {
+        return $this->review !== null;
+    }
+
+    /**
+     * Check if user can write review for this booking
+     */
+    public function canWriteReview(): bool
+    {
+        return Review::canWriteReview($this);
+    }
+
+    /**
      * Calculate nights between check-in and check-out
      */
     public function calculateNights(): int

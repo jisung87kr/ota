@@ -89,6 +89,53 @@ class Accommodation extends Model
     }
 
     /**
+     * Get reviews for this accommodation
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Get visible reviews only
+     */
+    public function visibleReviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->where('is_visible', true);
+    }
+
+    /**
+     * Get average rating from reviews
+     */
+    public function getAverageRating(): float
+    {
+        return round($this->visibleReviews()->avg('rating') ?? 0, 1);
+    }
+
+    /**
+     * Get review count
+     */
+    public function getReviewCount(): int
+    {
+        return $this->visibleReviews()->count();
+    }
+
+    /**
+     * Get rating distribution
+     */
+    public function getRatingDistribution(): array
+    {
+        $distribution = [];
+        for ($i = 5; $i >= 1; $i--) {
+            $distribution[$i] = $this->visibleReviews()
+                ->where('rating', '>=', $i)
+                ->where('rating', '<', $i + 1)
+                ->count();
+        }
+        return $distribution;
+    }
+
+    /**
      * Get the minimum room price
      */
     public function getMinPriceAttribute(): float

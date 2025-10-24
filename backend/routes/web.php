@@ -7,6 +7,7 @@ use App\Http\Controllers\Manager\BookingManagementController;
 use App\Http\Controllers\Manager\DashboardController;
 use App\Http\Controllers\Manager\RoomController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Web\AccommodationController;
 use App\Http\Controllers\Web\BookingController;
 use Illuminate\Support\Facades\Route;
@@ -64,10 +65,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/payments/{booking}/prepare', [PaymentController::class, 'prepare'])->name('payment.prepare');
     Route::get('/payments/callback', [PaymentController::class, 'callback'])->name('payment.callback');
     Route::post('/payments/{booking}/refund', [PaymentController::class, 'refund'])->name('payment.refund');
+
+    // Review Routes
+    Route::get('/bookings/{booking}/review/create', [ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/bookings/{booking}/review', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/reviews/{review}/helpful', [ReviewController::class, 'toggleHelpful'])->name('reviews.helpful');
 });
 
 // Payment Webhook (no auth required)
 Route::post('/payments/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
+
+// Public Review Routes
+Route::get('/accommodations/{accommodation}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
 
 // Protected Routes - Customer
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
@@ -101,6 +110,9 @@ Route::middleware(['auth', 'role:accommodation_manager'])->prefix('manager')->na
     Route::get('/bookings/{id}', [BookingManagementController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{id}/status', [BookingManagementController::class, 'updateStatus'])
         ->name('bookings.update-status');
+
+    // Review Management
+    Route::post('/reviews/{review}/respond', [ReviewController::class, 'respond'])->name('reviews.respond');
 });
 
 // Protected Routes - Admin
