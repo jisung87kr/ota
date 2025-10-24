@@ -2,12 +2,18 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Web\AccommodationController;
 use Illuminate\Support\Facades\Route;
 
 // Home
 Route::get('/', function () {
     return view('home');
 })->name('home');
+
+// Accommodation Search and Browsing (Public)
+Route::get('/search', [AccommodationController::class, 'search'])->name('accommodations.search');
+Route::get('/accommodations', [AccommodationController::class, 'index'])->name('accommodations.index');
+Route::get('/accommodations/{id}', [AccommodationController::class, 'show'])->name('accommodations.show');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {

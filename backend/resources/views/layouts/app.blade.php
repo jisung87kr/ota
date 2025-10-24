@@ -22,6 +22,9 @@
                         <a href="{{ route('home') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             홈
                         </a>
+                        <a href="{{ route('accommodations.search') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            숙소 검색
+                        </a>
                     </div>
                 </div>
 

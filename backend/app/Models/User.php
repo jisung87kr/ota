@@ -85,4 +85,12 @@ class User extends Authenticatable
     {
         return $this->role === Role::ADMIN;
     }
+
+    /**
+     * Get accommodations managed by this user
+     */
+    public function accommodations()
+    {
+        return $this->hasMany(Accommodation::class);
+    }
 }

@@ -13,12 +13,42 @@
             전국의 다양한 숙박시설을 한눈에 비교하고 예약하세요
         </p>
 
+        <!-- Quick Search Bar -->
+        <div class="mt-8 max-w-4xl mx-auto">
+            <form action="{{ route('accommodations.index') }}" method="GET" class="bg-white rounded-lg shadow-lg p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text"
+                           name="city"
+                           placeholder="어디로 떠나시나요?"
+                           class="px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="date"
+                           name="check_in"
+                           min="{{ date('Y-m-d') }}"
+                           placeholder="체크인"
+                           class="px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="date"
+                           name="check_out"
+                           min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                           placeholder="체크아웃"
+                           class="px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 font-semibold">
+                        검색
+                    </button>
+                </div>
+            </form>
+            <div class="mt-4 text-center">
+                <a href="{{ route('accommodations.search') }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                    상세 검색 옵션 보기 →
+                </a>
+            </div>
+        </div>
+
         @guest
             <div class="mt-8 flex justify-center gap-4">
-                <a href="{{ route('register') }}" class="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 text-lg font-medium">
-                    지금 시작하기
+                <a href="{{ route('register') }}" class="bg-white text-blue-600 border-2 border-blue-600 px-8 py-3 rounded-md hover:bg-blue-50 text-lg font-medium">
+                    회원가입
                 </a>
-                <a href="{{ route('login') }}" class="bg-white text-blue-600 border-2 border-blue-600 px-8 py-3 rounded-md hover:bg-blue-50 text-lg font-medium">
+                <a href="{{ route('login') }}" class="text-gray-600 hover:text-gray-900 px-8 py-3 rounded-md text-lg font-medium">
                     로그인
                 </a>
             </div>
