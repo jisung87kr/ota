@@ -427,12 +427,13 @@ class TestDataSeeder extends Seeder
                         $payment = Payment::create([
                             'booking_id' => $booking->id,
                             'merchant_uid' => 'merchant_' . time() . '_' . $booking->id,
+                            'imp_uid' => 'imp_' . time() . '_' . $booking->id,
                             'amount' => $totalPrice,
                             'status' => 'paid',
                             'paid_at' => $booking->created_at->addMinutes(rand(5, 30)),
-                            'pg_provider' => 'html5_inicis',
-                            'pay_method' => 'card',
+                            'payment_method' => 'card',
                             'card_name' => ['신한카드', '삼성카드', '현대카드', '국민카드'][rand(0, 3)],
+                            'card_number' => '****-****-****-' . rand(1000, 9999),
                         ]);
 
                         $booking->update(['paid_amount' => $totalPrice]);
