@@ -4,22 +4,20 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Search Form -->
+    <!-- Date Selection Form -->
     <div class="bg-white rounded-lg shadow-lg p-6 mb-6 sticky top-0 z-10">
-        <form method="GET" action="{{ route('accommodations.index') }}">
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <!-- City -->
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">목적지</label>
-                    <input type="text"
-                           name="city"
-                           value="{{ $accommodation->name }}"
-                           placeholder="어디로 떠나시나요?"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <form method="GET" action="{{ route('accommodations.show', $accommodation->id) }}">
+            <div class="flex items-center gap-4">
+                <!-- Accommodation Name (Read-only) -->
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">숙소</label>
+                    <div class="px-4 py-3 bg-gray-50 border border-gray-300 rounded-md text-gray-700 font-medium">
+                        {{ $accommodation->name }}
+                    </div>
                 </div>
 
                 <!-- Check-in Date -->
-                <div>
+                <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 mb-1">체크인</label>
                     <input type="date"
                            name="check_in"
@@ -29,7 +27,7 @@
                 </div>
 
                 <!-- Check-out Date -->
-                <div>
+                <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 mb-1">체크아웃</label>
                     <input type="date"
                            name="check_out"
@@ -38,13 +36,10 @@
                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
 
-                <!-- Search Button -->
+                <!-- Update Button -->
                 <div class="flex items-end">
-                    <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 font-semibold flex items-center justify-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        검색
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 font-semibold whitespace-nowrap">
+                        날짜 변경
                     </button>
                 </div>
             </div>
