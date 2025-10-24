@@ -194,7 +194,7 @@ class Accommodation extends Model
      */
     public function scopePriceRange($query, $minPrice = null, $maxPrice = null)
     {
-        return $query->whereHas('rooms', function ($q) use ($minPrice, $maxPrice) {
+        return $query->whereHas('activeRooms', function ($q) use ($minPrice, $maxPrice) {
             if ($minPrice) {
                 $q->where('base_price', '>=', $minPrice);
             }
